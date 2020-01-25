@@ -18,6 +18,7 @@ import random
 
 # Third-party libraries
 import numpy as np
+import os
 
 class Network(object):
 
@@ -149,14 +150,15 @@ def sigmoid_prime(z):
     return sigmoid(z)*(1-sigmoid(z))
 
 if __name__ == '__main__':
-    import ptvsd
-    ptvsd.enable_attach()
-    ptvsd.wait_for_attach()
     # ----------------------
     # - read the input data:
     
+    print(os.path.dirname(os.path.realpath(__file__)) + "/mnist.pkl.gz")
+
     import mnist_loader
-    training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
+    training_data, validation_data, test_data = mnist_loader.load_data_wrapper(
+        filePath=os.path.dirname(os.path.realpath(__file__)) + "/mnist.pkl.gz"
+        )
     training_data = list(training_data)
     
     # ---------------------
