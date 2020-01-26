@@ -9,6 +9,7 @@ chardet==3.0.4
 cycler==0.10.0
 decorator==4.4.1
 defusedxml==0.6.0
+doxypy==0.4.1
 entrypoints==0.3
 gast==0.2.2
 google-auth==1.10.1
@@ -46,6 +47,8 @@ notebook==6.0.2
 numpy==1.18.1
 oauthlib==3.1.0
 opt-einsum==3.1.0
+packaging==20.0
+pandas==0.25.3
 pandocfilters==1.4.2
 parso==0.5.2
 pexpect==4.7.0
@@ -53,6 +56,7 @@ pickleshare==0.7.5
 prometheus-client==0.7.1
 prompt-toolkit==2.0.10
 protobuf==3.11.2
+ptvsd==4.3.2
 ptyprocess==0.6.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
@@ -61,6 +65,7 @@ Pygments==2.5.2
 pyparsing==2.4.6
 pyrsistent==0.15.7
 python-dateutil==2.8.1
+pytz==2019.3
 pyzmq==18.1.1
 qtconsole==4.6.0
 requests==2.22.0
