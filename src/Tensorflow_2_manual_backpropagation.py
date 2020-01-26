@@ -14,7 +14,7 @@ class Network:
     def __init__(self):
         super().__init__()
 
-    def run(input, exceptedOutput, layerDefinitions):
+    def run(self, input, exceptedOutput, layerDefinitions):
         """
 
         Args:
@@ -26,14 +26,16 @@ class Network:
         seed=42
 
         # Create an tensor initializer so we can random initial values
-        tensorInitializer = tf.random_uniform_initializer(seed=seed)
+        tensorInitializer = tf.random_uniform_initializer(minval=0, maxval=1, seed=seed)
 
 
         with tf.device("/gpu:0"):
             # Create our input matrices based on the input
             # We define matrices as row major
             inputTensor = tf.constant(input, shape=(len(input), 1), dtype=dtype)
+            inputTensor, _ = tf.linalg.normalize(inputTensor)
             outputTensor = tf.constant(input, shape=(len(exceptedOutput), 1), dtype=dtype)
+            outputTensor, _ = tf.linalg.normalize(outputTensor)
 
 
             # Define these 'back to front' for row major matrices
@@ -61,6 +63,7 @@ class Network:
 
                 layer2Z = tf.matmul(layer2ToLayer3Weights, layer1Activation)+layer2Bias
                 layer2Activation = tf.math.maximum(layer2Z, 0)
+                
                 outputDifference = tf.math.squared_difference(layer2Activation, outputTensor)
 
                 # Could be called output cost as well. Layer2 is just the final layer here
@@ -73,6 +76,9 @@ class Network:
                     # then turn it all back into numbers.
                     tf.cast(layer2Activation > 0, dtype)
                 )
+
+                tf.print(tf.reduce_mean(outputDifference), tf.math.reduce_variance(outputDifference))
+
                 # Equation \frac{\partial C}{\partial b^l_j} = \delta^l_j.
                 layer2BiasDelta = outputCost
                 # Equation \frac{\partial C}{\partial w^l_{jk}} = a^{l-1}_k \delta^l_j
@@ -88,16 +94,16 @@ class Network:
                 layer1BiasDelta = layer1Cost
                 layer1WeightDelta = tf.matmul(layer1Cost, inputTensor, transpose_b=True)
 
-                layer2ToLayer3Weights = layer2ToLayer3Weights - layer2WeightDelta
-                layer2Bias = layer2Bias - layer2BiasDelta
+                layer2ToLayer3Weights = layer2ToLayer3Weights - tf.scalar_mul(0.001, layer2WeightDelta)
+                layer2Bias = layer2Bias - tf.scalar_mul(0.001, layer2BiasDelta)
 
-                layer1ToLayer2Weights = layer1ToLayer2Weights - layer1WeightDelta
-                layer1Bias = layer1Bias - layer1BiasDelta
+                layer1ToLayer2Weights = layer1ToLayer2Weights - tf.scalar_mul(0.001, layer1WeightDelta)
+                layer1Bias = layer1Bias - tf.scalar_mul(0.001, layer1BiasDelta)
 
 
 
 if __name__ == '__main__':
-    input = [1, 0, 2, 3]
-    exceptedOutput = [1, 1, 1, 1]
-    layerDefinitions = [len(input), 10, len(exceptedOutput)]
+    input = [1, 1, 2, 3]
+    exceptedOutput = [2, 2, 4, 6]
+    layerDefinitions = [len(input), 2, len(exceptedOutput)]
     Network().run(input, exceptedOutput, layerDefinitions)
